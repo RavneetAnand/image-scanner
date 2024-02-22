@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { PredictionModal } from "./PredictionModal";
 
@@ -42,47 +44,50 @@ const ImagesTab: React.FC = () => {
   }, []);
 
   const handlePredictClick = (image: ImageInfo) => {
+    const modal = document?.getElementById(
+      "my_modal_1"
+    ) as HTMLDialogElement | null;
+    modal?.showModal();
+
     setCurrentImage(image);
     setIsModalOpen(true);
   };
 
   return (
-    <div className="p-5 border-t border-gray-400 ">
-      <div className="overflow-x-auto mt-3 shadow-md border border-gray-400">
-        <table className="w-full text-left bg-blue-50">
-          <thead className="bg-blue-200">
-            <tr className="border-b border-gray-600">
-              <th>Filename</th>
-              <th>Size</th>
-              <th>Time of Upload</th>
-              <th>Action</th>
+    <div className="overflow-x-auto">
+      <table className="table">
+        <thead className="bg-blue-200">
+          <tr>
+            <th>Filename</th>
+            <th>Size</th>
+            <th>Time of Upload</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {images.map((image, index) => (
+            <tr key={index}>
+              <td>{image.filename}</td>
+              <td>{(image.size / 1024).toFixed(2)} KB</td>
+              <td>{image.uploadTime.toLocaleString()}</td>
+              <td>
+                <button
+                  onClick={() => handlePredictClick(image)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold mt-1 mb-1 py-0.5 px-2 rounded"
+                >
+                  PREDICT
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {images.map((image, index) => (
-              <tr key={index} className="border-b border-gray-500">
-                <td>{image.filename}</td>
-                <td>{(image.size / 1024).toFixed(2)} KB</td>
-                <td>{image.uploadTime.toLocaleString()}</td>
-                <td>
-                  <button
-                    onClick={() => handlePredictClick(image)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-semibold mt-1 mb-1 py-0.5 px-2 rounded"
-                  >
-                    PREDICT
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {isModalOpen && (
+          ))}
+        </tbody>
+      </table>
+      {
         <PredictionModal
           currentImage={currentImage}
           setIsModalOpen={setIsModalOpen}
         />
-      )}
+      }
     </div>
   );
 };

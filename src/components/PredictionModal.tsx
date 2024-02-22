@@ -61,39 +61,33 @@ export const PredictionModal = ({
   };
 
   return (
-    <div className="fixed z-10 inset-0 overflow-y-auto ">
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="bg-white p-5 rounded-lg shadow-xl border border-gray-500">
-          <h2 className="text-lg font-semibold">Submit Prediction</h2>
-          <input
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="input input-bordered w-full max-w-xs mt-5 mb-5 p-2 border border-gray-800 rounded text-sm"
-          />
-          <textarea
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="textarea textarea-bordered w-full max-w-xs mt-5 mb-5 p-2 border border-gray-800 rounded text-sm"
-          ></textarea>
-          <div className="flex justify-end gap-2 mt-4">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="btn bg-black text-white font-semibold px-1 py-1 rounded-md"
-            >
+    <dialog id="my_modal_1" className="modal">
+      <div className="modal-box">
+        <h3 className="font-bold text-lg">Submit Prediction</h3>
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="input input-bordered w-full max-w-xs mt-5 mb-5 p-2 border border-gray-800 rounded text-sm"
+        />
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="textarea textarea-bordered w-full max-w-xs mt-5 mb-5 p-2 border border-gray-800 rounded text-sm"
+        />
+        <div className="modal-action">
+          <form method="dialog">
+            <button className="btn mr-2" onClick={() => setIsModalOpen(false)}>
               Cancel
             </button>
-            <button
-              onClick={submitPrediction}
-              className="btn btn-primary bg-black text-white font-semibold px-1 py-1 rounded-md"
-            >
+            <button className="btn" onClick={submitPrediction}>
               Submit
             </button>
-          </div>
+          </form>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
