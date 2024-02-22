@@ -3,14 +3,10 @@ import { ImageInfo } from "./ImagesTab";
 import { useImageInfo } from "@/context/ImageInfoContext";
 
 type PredictionModalProps = {
-  setIsModalOpen: (isOpen: boolean) => void;
   currentImage: ImageInfo | null;
 };
 
-export const PredictionModal = ({
-  setIsModalOpen,
-  currentImage,
-}: PredictionModalProps) => {
+export const PredictionModal = ({ currentImage }: PredictionModalProps) => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -55,13 +51,20 @@ export const PredictionModal = ({
       timestamp: new Date().toISOString(),
     });
 
-    setIsModalOpen(false);
+    closeModal();
     setTitle("");
     setDescription("");
   };
 
+  const closeModal = () => {
+    const modal = document.getElementById(
+      "submit-prediction-modal"
+    ) as HTMLDialogElement | null;
+    modal?.close();
+  };
+
   return (
-    <dialog id="my_modal_1" className="modal">
+    <dialog id="submit-prediction-modal" className="modal">
       <div className="modal-box">
         <h3 className="font-bold text-lg">Submit Prediction</h3>
         <input
@@ -79,7 +82,7 @@ export const PredictionModal = ({
         />
         <div className="modal-action">
           <form method="dialog">
-            <button className="btn mr-2" onClick={() => setIsModalOpen(false)}>
+            <button className="btn mr-2" onClick={closeModal}>
               Cancel
             </button>
             <button className="btn" onClick={submitPrediction}>

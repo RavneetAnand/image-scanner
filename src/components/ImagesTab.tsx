@@ -11,7 +11,6 @@ export type ImageInfo = {
 
 const ImagesTab: React.FC = () => {
   const [images, setImages] = useState<ImageInfo[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [currentImage, setCurrentImage] = useState<ImageInfo | null>(null);
 
   useEffect(() => {
@@ -45,12 +44,11 @@ const ImagesTab: React.FC = () => {
 
   const handlePredictClick = (image: ImageInfo) => {
     const modal = document?.getElementById(
-      "my_modal_1"
+      "submit-prediction-modal"
     ) as HTMLDialogElement | null;
     modal?.showModal();
 
     setCurrentImage(image);
-    setIsModalOpen(true);
   };
 
   return (
@@ -82,12 +80,7 @@ const ImagesTab: React.FC = () => {
           ))}
         </tbody>
       </table>
-      {
-        <PredictionModal
-          currentImage={currentImage}
-          setIsModalOpen={setIsModalOpen}
-        />
-      }
+      {<PredictionModal currentImage={currentImage} />}
     </div>
   );
 };
