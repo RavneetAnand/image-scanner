@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ImageInfo } from "./ImagesTab";
+import { useImageInfo } from "@/context/ImageInfoContext";
 
 type PredictionModalProps = {
   setIsModalOpen: (isOpen: boolean) => void;
@@ -13,6 +14,8 @@ export const PredictionModal = ({
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
+  const { addImageInfo } = useImageInfo();
+
   const submitPrediction = async () => {
     if (currentImage && title && description) {
       const predictionData = {
@@ -22,7 +25,6 @@ export const PredictionModal = ({
       };
 
       try {
-        // Call API to save the predictions
         /* const response = await fetch('http://localhost:3000/predictions', {
         method: 'POST',
         headers: {
@@ -45,6 +47,13 @@ export const PredictionModal = ({
         alert("Error submitting prediction.");
       }
     }
+
+    addImageInfo({
+      filename: currentImage?.filename || "",
+      title: title,
+      description: description,
+      timestamp: new Date().toISOString(),
+    });
 
     setIsModalOpen(false);
     setTitle("");
