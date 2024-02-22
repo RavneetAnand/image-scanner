@@ -1,7 +1,7 @@
+import { useImageInfo } from "@/context/ImageInfoContext";
 import React, { useEffect, useState } from "react";
 
 type Prediction = {
-  id: number;
   title: string;
   description: string;
   timestamp: string;
@@ -10,6 +10,8 @@ type Prediction = {
 const PredictionsTab: React.FC = () => {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
 
+  const { imagesInfo } = useImageInfo();
+
   useEffect(() => {
     // Fetch predictions from the JSON server or backend
     const fetchPredictions = async () => {
@@ -17,8 +19,6 @@ const PredictionsTab: React.FC = () => {
         const response = await fetch("http://localhost:3000/predict");
         if (response.ok) {
           const data = await response.json();
-
-          setPredictions(data);
         }
       } catch (error) {
         console.error("Failed to fetch predictions:", error);
@@ -27,6 +27,18 @@ const PredictionsTab: React.FC = () => {
 
     fetchPredictions();
   }, []);
+
+  useEffect(() => {
+    setPredictions(() => {
+      return imagesInfo.map(({ title, description, timestamp }) => {
+        return {
+          title,
+          description,
+          timestamp,
+        };
+      });
+    });
+  }, [imagesInfo]);
 
   return (
     <div className="p-5 border-t border-gray-400">
@@ -41,8 +53,8 @@ const PredictionsTab: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {predictions.map((prediction) => (
-              <tr key={prediction.id}>
+            {predictions.map((prediction, index) => (
+              <tr key={index}>
                 <td>{prediction.title}</td>
                 <td>{prediction.description}</td>
                 <td>{new Date(prediction.timestamp).toLocaleString()}</td>
