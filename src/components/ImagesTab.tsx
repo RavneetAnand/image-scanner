@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { PredictionModal } from "./PredictionModal";
+import { fileName, imagePath } from "@/utils/constants";
 
 export type ImageInfo = {
   filename: string;
@@ -17,17 +18,17 @@ const ImagesTab: React.FC = () => {
     // Fetch images from the server or backend
     const fetchImages = async () => {
       try {
-        const response = await fetch("/assets/orange.jpg");
+        const response = await fetch(imagePath);
 
         if (response.ok) {
           const lastModified = response.headers.get("Last-Modified");
           const blob = await response.blob();
           const fileSize = blob.size;
-          const fileName = "orange.jpg";
+          const file = fileName;
 
           const uploadTime = new Date(lastModified || Date.now());
           const imageInfo: ImageInfo = {
-            filename: fileName,
+            filename: file,
             size: fileSize,
             uploadTime,
           };

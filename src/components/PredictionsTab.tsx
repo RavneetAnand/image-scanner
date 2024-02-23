@@ -4,6 +4,7 @@ import { useImageInfo } from "@/context/ImageInfoContext";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import PredictionOverlay from "./ImageWithPredictions/PredictionOverlay";
+import { jsonServerUrl } from "@/utils/constants";
 
 type ImageDetails = {
   title: string;
@@ -48,7 +49,7 @@ const PredictionsTab: React.FC = () => {
   // Fetch predictions from the JSON server or backend
   const fetchPredictions = async () => {
     try {
-      const response = await fetch("http://localhost:3000/predict");
+      const response = await fetch(jsonServerUrl);
       if (response.ok) {
         const data = await response.json();
         return data;
