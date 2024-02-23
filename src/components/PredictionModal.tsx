@@ -33,8 +33,16 @@ export const PredictionModal = ({ currentImage }: PredictionModalProps) => {
         const response = { ok: true };
 
         if (response.ok) {
-          // Add logic to update the Predictions tab here
-          alert("Prediction submitted successfully!");
+          addImageInfo({
+            filename: currentImage?.filename || "",
+            title: title,
+            description: description,
+            timestamp: new Date().toISOString(),
+          });
+
+          closeModal();
+          setTitle("");
+          setDescription("");
         } else {
           alert("Failed to submit prediction.");
         }
@@ -43,17 +51,6 @@ export const PredictionModal = ({ currentImage }: PredictionModalProps) => {
         alert("Error submitting prediction.");
       }
     }
-
-    addImageInfo({
-      filename: currentImage?.filename || "",
-      title: title,
-      description: description,
-      timestamp: new Date().toISOString(),
-    });
-
-    closeModal();
-    setTitle("");
-    setDescription("");
   };
 
   const closeModal = () => {
