@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 type Prediction = {
   label: string;
@@ -21,6 +21,7 @@ const PredictionOverlay = ({
   imageElement,
 }: PredictionOverlayProps) => {
   const [overlayStyle, setOverlayStyle] = useState({});
+  const throttleInProgress = useRef<boolean>();
 
   const { label, score, bbox } = prediction;
 
@@ -55,6 +56,17 @@ const PredictionOverlay = ({
         height: `${adjustedBboxes.adjustedHeight}px`,
       });
     }
+  const handleThrottleResize = () => {
+    if (throttleInProgress.current) {
+      return;
+    }
+    throttleInProgress.current = true;
+
+    setTimeout(() => {
+      updateOverlayStyle();
+
+      throttleInProgress.current = false;
+    }, 500);
   };
 
   // Update the overlay style on window resize
