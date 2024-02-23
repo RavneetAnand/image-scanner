@@ -15,7 +15,7 @@ const PredictionsTab: React.FC = () => {
   const [imagesDetails, setImagesDetails] = useState<ImageDetails[]>([]);
   const [predictions, setPredictions] = useState([]);
   const [imageVisible, setImageVisible] = useState(false);
-  const [isImageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -23,7 +23,7 @@ const PredictionsTab: React.FC = () => {
 
   const renderPredictionOverlays = () => {
     if (!imageRef.current) return;
-    console.log("renderPredictionOverlays");
+    console.log({ current: imageRef.current });
     return predictions.map((prediction, index) => (
       <PredictionOverlay
         key={index}
@@ -53,8 +53,9 @@ const PredictionsTab: React.FC = () => {
         const data = await response.json();
         return data;
       }
-    } catch (error) {
-      console.error("Failed to fetch predictions:", error);
+    } catch (error: any) {
+      console.log("error");
+      throw Error(`Failed to fetch predictions: ${error.message}`);
     }
   };
 
@@ -62,7 +63,6 @@ const PredictionsTab: React.FC = () => {
     if (predictions.length === 0) {
       const predictionResults = await fetchPredictions();
       const { predictions: preds } = predictionResults;
-
       setPredictions(preds);
     }
 
@@ -121,7 +121,7 @@ const PredictionsTab: React.FC = () => {
             ref={imageRef}
             onLoad={() => setImageLoaded(true)}
           />
-          {isImageLoaded && renderPredictionOverlays()}
+          {imageLoaded && renderPredictionOverlays()}
         </div>
       )}
     </div>

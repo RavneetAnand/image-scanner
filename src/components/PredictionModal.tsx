@@ -14,12 +14,6 @@ export const PredictionModal = ({ currentImage }: PredictionModalProps) => {
 
   const submitPrediction = async () => {
     if (currentImage && title && description) {
-      const predictionData = {
-        imageId: currentImage.filename,
-        title,
-        description,
-      };
-
       try {
         /* const response = await fetch('http://localhost:3000/predictions', {
         method: 'POST',
@@ -43,20 +37,19 @@ export const PredictionModal = ({ currentImage }: PredictionModalProps) => {
           closeModal();
           setTitle("");
           setDescription("");
-        } else {
-          alert("Failed to submit prediction.");
         }
       } catch (error) {
         console.error("Error submitting prediction:", error);
-        alert("Error submitting prediction.");
       }
     }
   };
 
+  // To close the modal
   const closeModal = () => {
     const modal = document.getElementById(
       "submit-prediction-modal"
     ) as HTMLDialogElement | null;
+
     modal?.close();
   };
 

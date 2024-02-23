@@ -45,10 +45,14 @@ const PredictionOverlay = ({
       };
 
       setOverlayStyle({
-        left: `${imageElement.offsetLeft + adjustedBboxes.adjustedX1}px`,
-        top: `${imageElement.offsetTop + adjustedBboxes.adjustedY1}px`,
-        width: `${adjustedBboxes.adjustedWidth}px`,
-        height: `${adjustedBboxes.adjustedHeight}px`,
+        left: `${(imageElement.offsetLeft + adjustedBboxes.adjustedX1).toFixed(
+          3
+        )}px`,
+        top: `${(imageElement.offsetTop + adjustedBboxes.adjustedY1).toFixed(
+          3
+        )}px`,
+        width: `${adjustedBboxes.adjustedWidth.toFixed(3)}px`,
+        height: `${adjustedBboxes.adjustedHeight.toFixed(3)}px`,
       });
     }
   }, [imageElement]);
@@ -79,6 +83,7 @@ const PredictionOverlay = ({
 
   return (
     <div
+      data-testid="prediction-overlay"
       className="absolute border-2 border-blue-500 bg-blend-overlay bg-blue-500 bg-opacity-10"
       style={overlayStyle}
     >

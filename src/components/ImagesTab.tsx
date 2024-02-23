@@ -35,7 +35,7 @@ const ImagesTab: React.FC = () => {
           setImages([imageInfo]);
         }
       } catch (error) {
-        console.error("Failed to fetch images:", error);
+        throw new Error(`Failed to fetch images: ${(error as Error).message}`);
       }
     };
 
