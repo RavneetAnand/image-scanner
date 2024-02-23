@@ -24,7 +24,7 @@ pnpm dev
 bun dev
 ```
 
-Then run the json server:
+Then run the json server in a separate terminal:
 
 ```bash
 npx json-server public/assets/db.json -p 8000
