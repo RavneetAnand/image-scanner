@@ -23,7 +23,7 @@ const PredictionsTab: React.FC = () => {
 
   const renderPredictionOverlays = () => {
     if (!imageRef.current) return;
-    console.log({ current: imageRef.current });
+
     return predictions.map((prediction, index) => (
       <PredictionOverlay
         key={index}
@@ -54,7 +54,6 @@ const PredictionsTab: React.FC = () => {
         return data;
       }
     } catch (error: any) {
-      console.log("error");
       throw Error(`Failed to fetch predictions: ${error.message}`);
     }
   };

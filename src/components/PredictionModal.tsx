@@ -38,9 +38,7 @@ export const PredictionModal = ({ currentImage }: PredictionModalProps) => {
           setTitle("");
           setDescription("");
         }
-      } catch (error) {
-        console.error("Error submitting prediction:", error);
-      }
+      } catch (error) {}
     }
   };
 
