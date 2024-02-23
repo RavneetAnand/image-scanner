@@ -25,18 +25,13 @@ const PredictionOverlay = ({
 
   const { label, score, bbox } = prediction;
 
-  const updateOverlayStyle = () => {
+  const updateOverlayStyle = useCallback(() => {
     if (imageElement) {
       // Original dimensions of the image used to calculate bbox values
       // These should be replaced with the actual dimensions of the original image
       const originalWidth = 1600;
       const originalHeight = 1200;
-      const {
-        width,
-        height,
-        x: left,
-        y: top,
-      } = imageElement.getBoundingClientRect();
+      const { width, height } = imageElement.getBoundingClientRect();
 
       // Calculate scale factors
       const scaleX = width / originalWidth;
@@ -48,14 +43,16 @@ const PredictionOverlay = ({
         adjustedWidth: (bbox.x2 - bbox.x1) * scaleX,
         adjustedHeight: (bbox.y2 - bbox.y1) * scaleY,
       };
-      console.log("Resize", adjustedBboxes);
+
       setOverlayStyle({
-        left: `${left + adjustedBboxes.adjustedX1}px`,
-        top: `${top + adjustedBboxes.adjustedY1}px`,
+        left: `${imageElement.offsetLeft + adjustedBboxes.adjustedX1}px`,
+        top: `${imageElement.offsetTop + adjustedBboxes.adjustedY1}px`,
         width: `${adjustedBboxes.adjustedWidth}px`,
         height: `${adjustedBboxes.adjustedHeight}px`,
       });
     }
+  }, [imageElement]);
+
   const handleThrottleResize = () => {
     if (throttleInProgress.current) {
       return;
@@ -71,12 +68,12 @@ const PredictionOverlay = ({
 
   // Update the overlay style on window resize
   useEffect(() => {
-    window.addEventListener("resize", updateOverlayStyle);
+    window.addEventListener("resize", handleThrottleResize);
     // Call the function once to set the initial overlay style
     updateOverlayStyle();
 
     return () => {
-      window.removeEventListener("resize", updateOverlayStyle);
+      window.removeEventListener("resize", handleThrottleResize);
     };
   }, [prediction]);
 
