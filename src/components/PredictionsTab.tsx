@@ -1,37 +1,40 @@
 "use client";
 
 import { useImageInfo } from "@/context/ImageInfoContext";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import PredictionOverlay from "./ImageWithPredictions/PredictionOverlay";
 
-type Prediction = {
+type ImageDetails = {
   title: string;
   description: string;
   timestamp: string;
 };
 
 const PredictionsTab: React.FC = () => {
-  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [imagesDetails, setImagesDetails] = useState<ImageDetails[]>([]);
+  const [predictions, setPredictions] = useState([]);
+  const [imageVisible, setImageVisible] = useState(false);
+  const [isImageLoaded, setImageLoaded] = useState(false);
+
+  const imageRef = useRef<HTMLImageElement>(null);
 
   const { imagesInfo } = useImageInfo();
 
-  useEffect(() => {
-    // Fetch predictions from the JSON server or backend
-    const fetchPredictions = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/predict");
-        if (response.ok) {
-          const data = await response.json();
-        }
-      } catch (error) {
-        console.error("Failed to fetch predictions:", error);
-      }
-    };
-
-    fetchPredictions();
-  }, []);
+  const renderPredictionOverlays = () => {
+    if (!imageRef.current) return;
+    console.log("renderPredictionOverlays");
+    return predictions.map((prediction, index) => (
+      <PredictionOverlay
+        key={index}
+        prediction={prediction}
+        imageElement={imageRef.current}
+      />
+    ));
+  };
 
   useEffect(() => {
-    setPredictions(() => {
+    setImagesDetails(() => {
       return imagesInfo.map(({ title, description, timestamp }) => {
         return {
           title,
@@ -41,6 +44,36 @@ const PredictionsTab: React.FC = () => {
       });
     });
   }, [imagesInfo]);
+
+  // Fetch predictions from the JSON server or backend
+  const fetchPredictions = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/predict");
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+    } catch (error) {
+      console.error("Failed to fetch predictions:", error);
+    }
+  };
+
+  const viewImage = async () => {
+    if (predictions.length === 0) {
+      const predictionResults = await fetchPredictions();
+      const { predictions: preds } = predictionResults;
+
+      setPredictions(preds);
+    }
+
+    // Open the image in a modal
+    setImageVisible(true);
+  };
+
+  const closeImage = () => {
+    setImageVisible(false);
+    setImageLoaded(false);
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -54,7 +87,7 @@ const PredictionsTab: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {predictions.map((prediction, index) => (
+          {imagesDetails.map((prediction, index) => (
             <tr key={index}>
               <td>{prediction.title}</td>
               <td>{prediction.description}</td>
@@ -62,9 +95,7 @@ const PredictionsTab: React.FC = () => {
               <td>
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-semibold mt-1 mb-1 py-0.5 px-2 rounded"
-                  onClick={() =>
-                    alert(`Viewing prediction: ${prediction.title}`)
-                  }
+                  onClick={viewImage}
                 >
                   VIEW
                 </button>
@@ -73,6 +104,26 @@ const PredictionsTab: React.FC = () => {
           ))}
         </tbody>
       </table>
+      {imageVisible && (
+        <div className="m-3 p-5 border border-gray-400">
+          <button
+            className="btn btn-sm btn-circle btn-ghost"
+            onClick={closeImage}
+          >
+            ✕
+          </button>
+          <Image
+            src="/assets/orange.jpg"
+            alt="Predicted Image"
+            className="w-full h-full max-w-screen-lg mx-auto"
+            width={500}
+            height={800}
+            ref={imageRef}
+            onLoad={() => setImageLoaded(true)}
+          />
+          {isImageLoaded && renderPredictionOverlays()}
+        </div>
+      )}
     </div>
   );
 };
