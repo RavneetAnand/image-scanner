@@ -1,4 +1,4 @@
-import ImagesTab from "@/components/ImagesTab";
+import PassportsList from "@/components/PassportsList";
 
 const Home: React.FC = () => {
   return (
@@ -7,7 +7,7 @@ const Home: React.FC = () => {
         <div className="flex items-center justify-between mb-4 bg-blue-500 py-3 rounded">
           <h1 className="text-xl font-semibold text-white px-2">Image Scanner</h1>
         </div>
-        <ImagesTab />
+        <PassportsList />
       </div>
     </div>
   );

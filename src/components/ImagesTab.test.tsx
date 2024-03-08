@@ -1,15 +1,11 @@
 import React from "react";
 import { render, waitFor } from "@testing-library/react";
-import { ImageInfoProvider } from "@/context/ImageInfoContext";
-import ImagesTab from "./ImagesTab";
+
+import PassportsList from "./PassportsList";
 import { act } from "react-dom/test-utils";
 
 const renderComponent = () => {
-  return render(
-    <ImageInfoProvider>
-      <ImagesTab />
-    </ImageInfoProvider>
-  );
+  return render(<PassportsList />);
 };
 
 // Mock the modal element with a showModal method
@@ -82,9 +78,7 @@ describe("ImagesTab", () => {
   });
 
   it("should throw the error when the fetch fails", async () => {
-    mockFetch = jest.fn(() =>
-      Promise.reject(new Error("Failed to fetch images"))
-    );
+    mockFetch = jest.fn(() => Promise.reject(new Error("Failed to fetch images")));
 
     try {
       await act(async () => {

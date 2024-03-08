@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { getPassportDetailsUrl } from "@/utils/constants";
 
-const ImagesTab: React.FC = () => {
+const PassportsList: React.FC = () => {
   const [images, setImages] = useState<File[]>([]);
   const [data, setData] = useState<{ dateOfBirth: string; dateOfExpiry: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +13,6 @@ const ImagesTab: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getImageReader = (file: File): FileReader => {
-    // Get the image loaded as buffer
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
 
@@ -53,7 +52,6 @@ const ImagesTab: React.FC = () => {
     setIsLoading(true);
 
     reader.onload = () => {
-      // Pass the image to the server in the body of the request as buffer, the one loaded in the table row
       params = reader.result;
 
       fetch(getPassportDetailsUrl, {
@@ -76,8 +74,7 @@ const ImagesTab: React.FC = () => {
   };
 
   const rendertableBody = () => {
-    // Destructure the image object to get required properties
-    const files = images.map((image, index) => ({
+    const files = images.map((image) => ({
       filename: image.name,
       path: URL.createObjectURL(image),
       type: image.type,
@@ -145,4 +142,4 @@ const ImagesTab: React.FC = () => {
   );
 };
 
-export default ImagesTab;
+export default PassportsList;
