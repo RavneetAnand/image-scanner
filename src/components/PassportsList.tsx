@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { getPassportDetailsUrl } from "@/utils/constants";
+import Toast from "./Toast";
 
 const PassportsList: React.FC = () => {
   const [images, setImages] = useState<File[]>([]);
@@ -10,17 +11,18 @@ const PassportsList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Clear the error message after 5 seconds
   useEffect(() => {
     if (error) {
-      alert("We couldn't fetch passport details. Please try uploading a clear image of the passport");
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000);
+
+      return () => clearTimeout(timer);
     }
-
-    return () => {
-      setError(null);
-    };
   }, [error]);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getImageReader = (file: File): FileReader => {
     const reader = new FileReader();
@@ -39,7 +41,7 @@ const PassportsList: React.FC = () => {
 
       // Add only image files
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
+        setError(new Error("Please select an image file"));
         return;
       }
 
@@ -78,7 +80,9 @@ const PassportsList: React.FC = () => {
             return newData;
           })
         )
-        .catch((e) => setError(e))
+        .catch((e) =>
+          setError(new Error("We couldn't fetch passport details. Please try uploading a clear image of the passport."))
+        )
         .finally(() => setIsLoading(false));
     };
   };
@@ -131,6 +135,8 @@ const PassportsList: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center w-full">
+      {isLoading && <Toast message="Scanning passport..." />}
+      {error && <Toast message={error.message} type={"warning"} />}
       <div className="flex justify-between my-8">
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
@@ -148,7 +154,7 @@ const PassportsList: React.FC = () => {
         />
       </div>
       <div className="overflow-x-auto mt-4">
-        <table className="table" data-testId="images-table">
+        <table className="table" data-testid="images-table">
           <thead className="bg-blue-200">
             <tr>
               <th>Passport</th>
