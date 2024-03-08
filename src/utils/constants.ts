@@ -1,1 +1,1 @@
-export const jsonServerUrl = "http://localhost:8000/predict";
+export const getPassportDetailsUrl = "http://localhost:3903/getPassportDetails";

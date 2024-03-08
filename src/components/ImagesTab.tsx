@@ -2,19 +2,23 @@
 
 import React, { useRef, useState } from "react";
 import Image from "next/image";
-
-export type ImageInfo = {
-  filename: string;
-  path: string;
-  type: string;
-  birthDate: string;
-  expiryDate: string;
-};
+import { getPassportDetailsUrl } from "@/utils/constants";
 
 const ImagesTab: React.FC = () => {
-  const [images, setImages] = useState<ImageInfo[]>([]);
+  const [images, setImages] = useState<File[]>([]);
+  const [data, setData] = useState<{ dateOfBirth: string; dateOfExpiry: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const getImageReader = (file: File): FileReader => {
+    // Get the image loaded as buffer
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+
+    return reader;
+  };
 
   const handleAddButtonClick = () => {
     fileInputRef.current?.click();
@@ -30,32 +34,98 @@ const ImagesTab: React.FC = () => {
         return;
       }
 
-      setImages((prevImages) => [
-        ...prevImages,
-        {
-          filename: file.name,
-          path: URL.createObjectURL(file),
-          type: file.type,
-          birthDate: "23/12/1990",
-          expiryDate: "24/12/2020",
-        },
-      ]);
+      setImages((prevImages) => [...prevImages, file]);
     }
+  };
+
+  const scanPassport = (imageIndex: number) => {
+    const image = images[imageIndex];
+
+    // Set header type as per the image type
+    const headers = {
+      "Content-Type": image.type,
+    };
+
+    let params;
+
+    const reader = getImageReader(image);
+
+    setIsLoading(true);
+
+    reader.onload = () => {
+      // Pass the image to the server in the body of the request as buffer, the one loaded in the table row
+      params = reader.result;
+
+      fetch(getPassportDetailsUrl, {
+        method: "POST",
+        headers,
+        body: params,
+      })
+        .then((res) => res.json())
+        .then((resData) =>
+          setData((prevData) => {
+            // Add the data to the state at the index of the image
+            const newData = [...prevData];
+            newData[imageIndex] = resData;
+            return newData;
+          })
+        )
+        .catch((e) => setError(e))
+        .finally(() => setIsLoading(false));
+    };
+  };
+
+  const rendertableBody = () => {
+    // Destructure the image object to get required properties
+    const files = images.map((image, index) => ({
+      filename: image.name,
+      path: URL.createObjectURL(image),
+      type: image.type,
+    }));
+
+    return files.map((image, index) => (
+      <tr key={index}>
+        <td>
+          <div className="flex items-center gap-3">
+            <div className="avatar">
+              <div className="mask mask-squircle w-12 h-12">
+                <Image src={image.path} alt="Avatar passport image" width={2} height={2} />
+              </div>
+            </div>
+            <div>
+              <div>{image.filename}</div>
+            </div>
+          </div>
+        </td>
+        <td>{data[index]?.dateOfExpiry}</td>
+        <td>{data[index]?.dateOfBirth}</td>
+        <td>
+          {isLoading ? (
+            <span className="loading loading-spinner text-info"></span>
+          ) : (
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => scanPassport(index)}
+              // Button should be hidden when the dates are there for the index
+              disabled={!!data[index]?.dateOfBirth || !!data[index]?.dateOfExpiry}
+            >
+              Scan Passport
+            </button>
+          )}
+        </td>
+      </tr>
+    ));
   };
 
   return (
     <div className="flex flex-col justify-center w-full">
       <div className="flex justify-between my-8">
-        <div className="flex items-center border-2 rounded">
-          <input type="text" className="px-4 py-1 w-80" placeholder="Search" />
-        </div>
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
           onClick={handleAddButtonClick}
         >
           + Add
         </button>
-
         <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
       </div>
       <div className="overflow-x-auto mt-4">
@@ -68,31 +138,7 @@ const ImagesTab: React.FC = () => {
               <th></th>
             </tr>
           </thead>
-          <tbody>
-            {images.map((image, index) => (
-              <tr key={index}>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <div className="avatar">
-                      <div className="mask mask-squircle w-12 h-12">
-                        <Image src={image.path} alt="Avatar passport image" width={2} height={2} />
-                      </div>
-                    </div>
-                    <div>
-                      <div>{image.filename}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>{image.expiryDate}</td>
-                <td>{image.birthDate}</td>
-                <td>
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">
-                    Scan Passport
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+          <tbody>{rendertableBody()}</tbody>
         </table>
       </div>
     </div>
