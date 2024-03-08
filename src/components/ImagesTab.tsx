@@ -1,87 +1,100 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { PredictionModal } from "./PredictionModal";
-import { fileName, imagePath } from "@/utils/constants";
+import React, { useRef, useState } from "react";
+import Image from "next/image";
 
 export type ImageInfo = {
   filename: string;
-  size: number; // Size in bytes
-  uploadTime: Date;
+  path: string;
+  type: string;
+  birthDate: string;
+  expiryDate: string;
 };
 
 const ImagesTab: React.FC = () => {
   const [images, setImages] = useState<ImageInfo[]>([]);
-  const [currentImage, setCurrentImage] = useState<ImageInfo | null>(null);
 
-  useEffect(() => {
-    // Fetch images from the server or backend
-    const fetchImages = async () => {
-      try {
-        const response = await fetch(imagePath);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-        if (response.ok) {
-          const lastModified = response.headers.get("Last-Modified");
-          const blob = await response.blob();
-          const fileSize = blob.size;
-          const file = fileName;
+  const handleAddButtonClick = () => {
+    fileInputRef.current?.click();
+  };
 
-          const uploadTime = new Date(lastModified || Date.now());
-          const imageInfo: ImageInfo = {
-            filename: file,
-            size: fileSize,
-            uploadTime,
-          };
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
 
-          setImages([imageInfo]);
-        }
-      } catch (error) {
-        throw new Error(`Failed to fetch images: ${(error as Error).message}`);
+      // Add only image files
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file");
+        return;
       }
-    };
 
-    fetchImages();
-  }, []);
-
-  const handlePredictClick = (image: ImageInfo) => {
-    const modal = document?.getElementById(
-      "submit-prediction-modal"
-    ) as HTMLDialogElement | null;
-    modal?.showModal();
-
-    setCurrentImage(image);
+      setImages((prevImages) => [
+        ...prevImages,
+        {
+          filename: file.name,
+          path: URL.createObjectURL(file),
+          type: file.type,
+          birthDate: "23/12/1990",
+          expiryDate: "24/12/2020",
+        },
+      ]);
+    }
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="table">
-        <thead className="bg-blue-200">
-          <tr>
-            <th>Filename</th>
-            <th>Size</th>
-            <th>Time of Upload</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {images.map((image, index) => (
-            <tr key={index}>
-              <td>{image.filename}</td>
-              <td>{(image.size / 1024).toFixed(2)} KB</td>
-              <td>{image.uploadTime.toLocaleString()}</td>
-              <td>
-                <button
-                  onClick={() => handlePredictClick(image)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold mt-1 mb-1 py-0.5 px-2 rounded"
-                >
-                  PREDICT
-                </button>
-              </td>
+    <div className="flex flex-col justify-center w-full">
+      <div className="flex justify-between my-8">
+        <div className="flex items-center border-2 rounded">
+          <input type="text" className="px-4 py-1 w-80" placeholder="Search" />
+        </div>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+          onClick={handleAddButtonClick}
+        >
+          + Add
+        </button>
+
+        <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+      </div>
+      <div className="overflow-x-auto mt-4">
+        <table className="table">
+          <thead className="bg-blue-200">
+            <tr>
+              <th>Passport</th>
+              <th>Expiry Date</th>
+              <th>Birth Date</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {<PredictionModal currentImage={currentImage} />}
+          </thead>
+          <tbody>
+            {images.map((image, index) => (
+              <tr key={index}>
+                <td>
+                  <div className="flex items-center gap-3">
+                    <div className="avatar">
+                      <div className="mask mask-squircle w-12 h-12">
+                        <Image src={image.path} alt="Avatar passport image" width={2} height={2} />
+                      </div>
+                    </div>
+                    <div>
+                      <div>{image.filename}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>{image.expiryDate}</td>
+                <td>{image.birthDate}</td>
+                <td>
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">
+                    Scan Passport
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -1,36 +1,13 @@
 import ImagesTab from "@/components/ImagesTab";
-import PredictionsTab from "@/components/PredictionsTab";
 
 const Home: React.FC = () => {
   return (
-    <div role="tablist" className="tabs tabs-lifted my-10 lg:mx-10">
-      <input
-        type="radio"
-        name="my_tabs_2"
-        role="tab"
-        className="tab"
-        aria-label="Images"
-        defaultChecked
-      />
-      <div
-        role="tabpanel"
-        className="tab-content bg-base-100 border-base-300 rounded-box p-6"
-      >
+    <div className="flex justify-center">
+      <div className="bg-white shadow-lg rounded-lg p-6 m-4 w-full">
+        <div className="flex items-center justify-between mb-4 bg-blue-500 py-3 rounded">
+          <h1 className="text-xl font-semibold text-white px-2">Image Scanner</h1>
+        </div>
         <ImagesTab />
-      </div>
-
-      <input
-        type="radio"
-        name="my_tabs_2"
-        role="tab"
-        className="tab"
-        aria-label="Predictions"
-      />
-      <div
-        role="tabpanel"
-        className="tab-content bg-base-100 border-base-300 rounded-box p-6"
-      >
-        <PredictionsTab />
       </div>
     </div>
   );
