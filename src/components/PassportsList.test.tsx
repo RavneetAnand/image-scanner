@@ -18,7 +18,7 @@ let mockFetch: jest.Mock = jest.fn(() =>
   Promise.resolve({
     ok: true,
     headers: {
-      post: () => ({ "Last-Modified": "2021-08-25T18:00:00Z" }),
+      post: () => {},
     },
   })
 );
