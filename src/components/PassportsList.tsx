@@ -135,13 +135,20 @@ const PassportsList: React.FC = () => {
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
           onClick={handleAddButtonClick}
+          data-testid="add-button"
         >
           + Add
         </button>
-        <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          data-testid="upload-input"
+        />
       </div>
       <div className="overflow-x-auto mt-4">
-        <table className="table">
+        <table className="table" data-testId="images-table">
           <thead className="bg-blue-200">
             <tr>
               <th>Passport</th>
