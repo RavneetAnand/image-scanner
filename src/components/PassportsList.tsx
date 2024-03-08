@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { getPassportDetailsUrl } from "@/utils/constants";
 
@@ -9,6 +9,16 @@ const PassportsList: React.FC = () => {
   const [data, setData] = useState<{ dateOfBirth: string; dateOfExpiry: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (error) {
+      alert("We couldn't fetch passport details. Please try uploading a clear image of the passport");
+    }
+
+    return () => {
+      setError(null);
+    };
+  }, [error]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -73,6 +83,10 @@ const PassportsList: React.FC = () => {
     };
   };
 
+  const passportScanned = (imageIndex: number) => {
+    return !!data[imageIndex]?.dateOfBirth || !!data[imageIndex]?.dateOfExpiry;
+  };
+
   const rendertableBody = () => {
     const files = images.map((image) => ({
       filename: image.name,
@@ -97,18 +111,19 @@ const PassportsList: React.FC = () => {
         <td>{data[index]?.dateOfExpiry}</td>
         <td>{data[index]?.dateOfBirth}</td>
         <td>
-          {isLoading ? (
-            <span className="loading loading-spinner text-info"></span>
-          ) : (
+          {
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`${
+                passportScanned(index)
+                  ? "hidden"
+                  : "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+              }`}
               onClick={() => scanPassport(index)}
-              // Button should be hidden when the dates are there for the index
-              disabled={!!data[index]?.dateOfBirth || !!data[index]?.dateOfExpiry}
+              disabled={passportScanned(index)}
             >
               Scan Passport
             </button>
-          )}
+          }
         </td>
       </tr>
     ));
