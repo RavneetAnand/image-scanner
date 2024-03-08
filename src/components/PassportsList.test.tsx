@@ -23,6 +23,10 @@ let mockFetch: jest.Mock = jest.fn(() =>
   })
 );
 
+// Mock URL.createObjectURL
+const createObjectURLMock = jest.fn().mockReturnValue("http://localhost:3000");
+URL.createObjectURL = createObjectURLMock;
+
 describe("PassportsList", () => {
   beforeEach(() => {
     // Clear all the mock function calls before each test
@@ -51,15 +55,8 @@ describe("PassportsList", () => {
   });
 
   it("should show an alert when non-image file is uploaded", async () => {
-    // Mock URL.createObjectURL
-    const createObjectURLMock = jest.fn().mockReturnValue("http://localhost:3000");
-    URL.createObjectURL = createObjectURLMock;
-
-    //Mock alert
-    global.alert = jest.fn();
-
     const file = new File(["hello"], "hello.png", { type: "application/json" });
-    const { getByTestId } = renderComponent();
+    const { getByTestId, getByText } = renderComponent();
 
     const addButton = getByTestId("add-button");
 
@@ -75,14 +72,12 @@ describe("PassportsList", () => {
       });
     });
 
-    expect(alert).toHaveBeenCalledWith("Please select an image file");
+    await waitFor(() => {
+      expect(getByText("Please select an image file")).toBeInTheDocument();
+    });
   });
 
   it("should render the table when an image file is uploaded", async () => {
-    // Mock URL.createObjectURL
-    const createObjectURLMock = jest.fn().mockReturnValue("http://localhost:3000");
-    URL.createObjectURL = createObjectURLMock;
-
     const file = new File(["hello"], "hello.png", { type: "image/png" });
 
     const { getByTestId, getByText } = renderComponent();
