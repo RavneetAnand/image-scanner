@@ -73,7 +73,14 @@ const PassportsList: React.FC = () => {
         headers,
         body: params,
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            return res.json().then((err) => {
+              throw new Error(err.message);
+            });
+          }
+          return res.json();
+        })
         .then((resData) =>
           setData((prevData) => {
             // Add the data to the state at the index of the image
@@ -83,12 +90,12 @@ const PassportsList: React.FC = () => {
           })
         )
         .catch((e) => {
-          if (e.errorCode === 400) {
+          if (e.message === "Failed to fetch") {
+            setError(new Error("An error occurred while scanning the passport"));
+          } else {
             setError(
               new Error("We couldn't fetch passport details. Please try uploading a clear image of the passport.")
             );
-          } else {
-            setError(new Error("An error occurred while scanning the passport"));
           }
         })
         .finally(() => setIsLoading(false));
