@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { getPassportDetailsUrl } from "@/utils/constants";
 import Toast from "./Toast";
+import { getPassportDetailsUrl } from "@/utils/constants";
 
 const PassportsList: React.FC = () => {
   const [images, setImages] = useState<File[]>([]);
@@ -52,6 +52,8 @@ const PassportsList: React.FC = () => {
   const scanPassport = (imageIndex: number) => {
     const image = images[imageIndex];
 
+    const apiUrl = process.env.NEXT_PUBLIC_IMAGE_SCANNER_API_URL || getPassportDetailsUrl;
+
     // Set header type as per the image type
     const headers = {
       "Content-Type": image.type,
@@ -66,7 +68,7 @@ const PassportsList: React.FC = () => {
     reader.onload = () => {
       params = reader.result;
 
-      fetch(getPassportDetailsUrl, {
+      fetch(apiUrl, {
         method: "POST",
         headers,
         body: params,
