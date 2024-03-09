@@ -24,15 +24,26 @@ pnpm dev
 bun dev
 ```
 
-Then run the json server in a separate terminal:
-
-```bash
-npx json-server public/assets/db.json -p 8000
-```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the Images tab.
 
 ## The Brief
+
+This component is responsible for handling the upload and display of passport information. It is structured using Tailwind CSS classes for styling and layout. Here's a breakdown of its functionality:
+
+- **Loading and Error Handling**:
+
+  - The component shows a toast notification with the message "Scanning passport..." indicating that the passport scanning process is in progress.
+  - If an `error` occurs, it displays a toast notification with the error message to alert the user of the issue.
+
+- **Add Button**:
+
+  - A button labeled "Add" allows users to add new passport images from their local system.
+  - Only image files can be loaded. (png/jpeg)
+
+- **Passport Data Table**:
+
+  - Displays the passport data in a table format with columns for Passport, Expiry Date, and Birth Date. Button `Scan passport` is visible only until the passport is not scanned.
+  - The table is scrollable horizontally to accommodate the content width, ensuring responsiveness and accessibility.
 
 ## Authors
 
