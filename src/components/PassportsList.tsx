@@ -82,9 +82,15 @@ const PassportsList: React.FC = () => {
             return newData;
           })
         )
-        .catch((e) =>
-          setError(new Error("We couldn't fetch passport details. Please try uploading a clear image of the passport."))
-        )
+        .catch((e) => {
+          if (e.errorCode === 400) {
+            setError(
+              new Error("We couldn't fetch passport details. Please try uploading a clear image of the passport.")
+            );
+          } else {
+            setError(new Error("An error occurred while scanning the passport"));
+          }
+        })
         .finally(() => setIsLoading(false));
     };
   };
